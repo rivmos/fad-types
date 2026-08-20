@@ -16,12 +16,15 @@ export interface OrderItemDTO {
 /**
  * Order in API responses.
  */
+// Mirrors the `OrderStatus` enum in the backend's prisma/schema.prisma,
+// in the same order, so the two can be diffed mechanically.
 export type OrderStatusDTO =
   | "PENDING"
   | "SHIPPED"
   | "DELIVERED"
   | "CANCELLED"
-  | "RETURNED";
+  | "RETURNED"
+  | "PACKED";
 
 export type PaymentMethodDTO = "COD" | "UPI";
 
