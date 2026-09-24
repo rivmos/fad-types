@@ -56,6 +56,15 @@ export type PaymentStatusDTO = "PENDING" | "PAID" | "REFUNDED" | "FAILED";
 
 export interface OrderResponseDTO {
   id: string;
+  /**
+   * Human-readable order number, e.g. `FAD-26-0042`. Allocated per calendar year.
+   *
+   * `id` is a uuid: a shop taking a phone call cannot read it aloud and a customer
+   * cannot read it back. Clients were printing `id.slice(0, 8)`, which looks like an
+   * identifier, is not unique, and cannot be typed into a search box. Show this
+   * wherever an order is named to a human, and keep `id` for links and API calls.
+   */
+  orderNumber: string;
   status: OrderStatusDTO;
   paymentMethod: PaymentMethodDTO;
   paymentStatus: PaymentStatusDTO;
