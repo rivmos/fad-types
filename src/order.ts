@@ -19,8 +19,22 @@ export interface OrderItemDTO {
    */
   lineTotal: MoneyDTO;
   productVariantId: string;
+  /**
+   * The variant as it is *now*, for images and links.
+   *
+   * Everything a receipt or an order history should show comes from the frozen
+   * fields above and below instead: this relation reflects later edits, which is
+   * exactly what freezing the line was for.
+   */
   variant: ProductVariantWithProductDTO;
+  /** Product name as it read when the order was placed (frozen). */
   productName: string;
+  /** Variant name as it read when the order was placed (frozen). */
+  variantName: string;
+  /** Variant SKU as it read when the order was placed (frozen). */
+  sku: string | null;
+  /** Variant weight in grams as it read when the order was placed (frozen). */
+  weight: number;
 }
 
 /**
