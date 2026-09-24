@@ -1,3 +1,4 @@
+import type { MoneyDTO } from "./common.js";
 import type { ProductVariantWithProductDTO } from "./product.js";
 
 /**
@@ -21,5 +22,6 @@ export interface CartResponseDTO {
   status: CartStatusDTO;
   items: CartItemDTO[];
   totalItems: number;
-  subtotal: number;
+  /** Exact decimal string (`"450.00"`). See {@link MoneyDTO}. */
+  subtotal: MoneyDTO;
 }

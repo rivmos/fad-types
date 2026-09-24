@@ -1,4 +1,5 @@
 import type { AddressResponseDTO } from "./address.js";
+import type { MoneyDTO } from "./common.js";
 import type { ProductVariantWithProductDTO } from "./product.js";
 
 /**
@@ -7,7 +8,16 @@ import type { ProductVariantWithProductDTO } from "./product.js";
 export interface OrderItemDTO {
   id: string;
   quantity: number;
-  price: number;
+  /** Unit price at order time, as an exact decimal string (`"450.00"`). See {@link MoneyDTO}. */
+  price: MoneyDTO;
+  /**
+   * `price * quantity`, computed by the backend in exact decimal arithmetic.
+   *
+   * Exists so clients never multiply money themselves. Both clients used to render
+   * `item.price * item.quantity` in a float, and the admin's receipt template did not
+   * multiply at all -- printing five bags at the price of one.
+   */
+  lineTotal: MoneyDTO;
   productVariantId: string;
   variant: ProductVariantWithProductDTO;
   productName: string;
@@ -35,11 +45,22 @@ export interface OrderResponseDTO {
   status: OrderStatusDTO;
   paymentMethod: PaymentMethodDTO;
   paymentStatus: PaymentStatusDTO;
-  subtotal: number;
-  discount: number;
-  deliveryFee: number;
-  tax: number;
-  total: number;
+  subtotal: MoneyDTO;
+  discount: MoneyDTO;
+  deliveryFee: MoneyDTO;
+  tax: MoneyDTO;
+  total: MoneyDTO;
+  /**
+   * `total` in integer paise, for handing to a payment gateway.
+   *
+   * Exists so that no client ever multiplies a price by 100 again. Two separate
+   * `* 100` conversions used to live in `fad-backend` and `rfm-app`, in different
+   * repositories, neither aware of the other -- and because both were
+   * `number -> number`, changing one without the other would have charged every
+   * customer 100x with nothing going red. The backend is now the only place that
+   * converts, once, and clients pass this straight through.
+   */
+  totalPaise: number;
   gatewayOrderId: string | null;
   address: AddressResponseDTO;
   items: OrderItemDTO[];
