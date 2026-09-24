@@ -1,3 +1,4 @@
+import type { MoneyDTO } from "./common.js";
 /**
  * Category summary embedded in product responses (no Prisma).
  */
@@ -9,13 +10,15 @@ export interface CategorySummaryDTO {
 }
 
 /**
- * Product variant in API responses. Price/weight as numbers for clients.
+ * Product variant in API responses.
  */
 export interface ProductVariantDTO {
   id: string;
   sku: string | null;
   name: string;
-  price: number;
+  /** Exact decimal string (`"450.00"`). See {@link MoneyDTO}. */
+  price: MoneyDTO;
+  /** Grams. Not money -- a plain number is fine. */
   weight: number;
   stock: number;
 }
