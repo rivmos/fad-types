@@ -22,6 +22,12 @@ export interface AdminStatsDTO {
     /** Start of today in the shop's time zone, as an ISO instant. */
     from: string;
     /**
+     * Today as the shop's calendar has it, `YYYY-MM-DD`. What to pass as `from`/`to`
+     * to `GET /orders` for the same day -- those dates are read in the shop's time
+     * zone too, so the list and this count agree.
+     */
+    date: string;
+    /**
      * Orders placed today that are real sales: cash on delivery, or paid online.
      * An online order still waiting for its payment is not counted, and neither is
      * anything cancelled or returned.
