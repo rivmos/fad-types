@@ -7,3 +7,4 @@ export * from "./address.js";
 export * from "./cart.js";
 export * from "./order.js";
 export * from "./payment.js";
+export * from "./stats.js";
