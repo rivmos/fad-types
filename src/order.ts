@@ -106,3 +106,16 @@ export interface OrderResponseDTO {
   items: OrderItemDTO[];
   createdAt: string;
 }
+
+/**
+ * One step in an order's history, oldest first: `GET /orders/:id/history` (P2-13).
+ *
+ * What the customer's timeline draws. Only the status and when: the trail also
+ * records who moved it and why, and a staff member's reason ("customer rang, wrong
+ * address") is a note for the shop, not something to show the customer.
+ */
+export interface OrderStatusEventDTO {
+  status: OrderStatusDTO;
+  /** ISO instant. */
+  at: string;
+}
