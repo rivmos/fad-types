@@ -54,6 +54,21 @@ export type PaymentMethodDTO = "COD" | "UPI";
 
 export type PaymentStatusDTO = "PENDING" | "PAID" | "REFUNDED" | "FAILED";
 
+/**
+ * Who placed an order.
+ *
+ * The account, not the delivery contact: `address.contactName`/`contactPhone` say who
+ * receives the parcel, which is often someone else. The shop needs this to find an
+ * order when a customer rings (P2-07's search by phone) and to know who to call back.
+ */
+export interface OrderCustomerDTO {
+  id: string;
+  /** Unset until the customer fills in their profile. */
+  name: string | null;
+  /** E.164, e.g. `+919876543210` -- the number they sign in with. */
+  phone: string;
+}
+
 export interface OrderResponseDTO {
   id: string;
   /**
@@ -85,6 +100,8 @@ export interface OrderResponseDTO {
    */
   totalPaise: number;
   gatewayOrderId: string | null;
+  /** The account that placed the order (P2-07). */
+  customer: OrderCustomerDTO;
   address: AddressResponseDTO;
   items: OrderItemDTO[];
   createdAt: string;
