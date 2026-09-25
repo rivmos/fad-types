@@ -1,6 +1,18 @@
 import type { AddressResponseDTO } from "./address.js";
 import type { MoneyDTO } from "./common.js";
-import type { ProductVariantWithProductDTO } from "./product.js";
+/**
+ * The product behind an order line *now*, for a link and a thumbnail (P2-20).
+ *
+ * Replaces the whole `ProductVariantWithProductDTO` -- product, category and all,
+ * fetched for every line of every order -- that clients never read: every name and
+ * price an order shows comes from the frozen fields on the line itself.
+ */
+export interface OrderItemProductDTO {
+  id: string;
+  slug: string | null;
+  /** First image, or `null` if it has none (or none any more). */
+  image: string | null;
+}
 
 /**
  * Single item in an order response (snapshot of variant + price at order time).
@@ -19,14 +31,8 @@ export interface OrderItemDTO {
    */
   lineTotal: MoneyDTO;
   productVariantId: string;
-  /**
-   * The variant as it is *now*, for images and links.
-   *
-   * Everything a receipt or an order history should show comes from the frozen
-   * fields above and below instead: this relation reflects later edits, which is
-   * exactly what freezing the line was for.
-   */
-  variant: ProductVariantWithProductDTO;
+  /** The product as it is *now*, for links and images only (P2-20). */
+  product: OrderItemProductDTO;
   /** Product name as it read when the order was placed (frozen). */
   productName: string;
   /** Variant name as it read when the order was placed (frozen). */
@@ -35,6 +41,48 @@ export interface OrderItemDTO {
   sku: string | null;
   /** Variant weight in grams as it read when the order was placed (frozen). */
   weight: number;
+  /** HSN code as it read when the order was placed (frozen, P1-11). */
+  hsnCode: string | null;
+  /**
+   * GST rate on this line as it read when the order was placed (frozen), a percentage
+   * string: `"5.00"`. The receipt printed a correct GST total beside a 0% rate
+   * because the line did not carry this.
+   */
+  taxRatePercent: string;
+}
+
+/**
+ * The tax invoice for an order (P1-12), issued at dispatch (P2-31). A summary: the
+ * full document (supplier, buyer, place of supply) is on the server.
+ */
+export interface OrderInvoiceDTO {
+  /** Gap-free per financial year, e.g. `FAD/2026-27/0001`. */
+  invoiceNumber: string;
+  issuedAt: string;
+  /** Intra-state is split CGST + SGST; inter-state is IGST. Never both. */
+  supplyType: "INTRA_STATE" | "INTER_STATE";
+  taxableValue: MoneyDTO;
+  cgst: MoneyDTO;
+  sgst: MoneyDTO;
+  igst: MoneyDTO;
+  total: MoneyDTO;
+}
+
+/**
+ * A status change the viewer may make to this order (P2-15b).
+ *
+ * Decided by the server, per caller, from the transition table, their role and the
+ * order's money state -- so a client never keeps its own copy of the rules. The admin
+ * did, and it drifted: it still refused to cancel a paid order after the server had
+ * learned to refund one (P2-03/P2-04).
+ */
+export interface OrderMoveDTO {
+  to: OrderStatusDTO;
+  /**
+   * Why the move would be refused for this order right now, or `null` if it would
+   * go through. Shown on a disabled button instead of inviting a certain 409.
+   */
+  blockedReason: string | null;
 }
 
 /**
@@ -111,6 +159,13 @@ export interface OrderResponseDTO {
   paymentDueBy: string | null;
   /** The account that placed the order (P2-07). */
   customer: OrderCustomerDTO;
+  /** The tax invoice, once issued at dispatch; `null` before that (P1-12). */
+  invoice: OrderInvoiceDTO | null;
+  /**
+   * The status changes *this viewer* may make, via `PATCH /orders/:id/status`
+   * (P2-15b). Empty for a customer -- their one action is cancel, via its own route.
+   */
+  allowedMoves: OrderMoveDTO[];
   address: AddressResponseDTO;
   items: OrderItemDTO[];
   createdAt: string;
