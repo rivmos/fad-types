@@ -100,6 +100,15 @@ export interface OrderResponseDTO {
    */
   totalPaise: number;
   gatewayOrderId: string | null;
+  /**
+   * When an unpaid online order's stock hold ends, as an ISO instant (P2-17).
+   * `null` for anything else -- cash orders, paid orders, orders past PENDING.
+   *
+   * After this the server may release the order (stock back to the shelf) the next
+   * time it sweeps; until then, paying still works. The app shows it as "Pay by …",
+   * so the hold's length -- a server setting -- is never hardcoded in a client.
+   */
+  paymentDueBy: string | null;
   /** The account that placed the order (P2-07). */
   customer: OrderCustomerDTO;
   address: AddressResponseDTO;
