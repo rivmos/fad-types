@@ -56,7 +56,7 @@ export interface OrderItemDTO {
  * full document (supplier, buyer, place of supply) is on the server.
  */
 export interface OrderInvoiceDTO {
-  /** Gap-free per financial year, e.g. `FAD/2026-27/0001`. */
+  /** Gap-free per financial year, e.g. `FAD/26-27/0001`. */
   invoiceNumber: string;
   issuedAt: string;
   /** Intra-state is split CGST + SGST; inter-state is IGST. Never both. */
