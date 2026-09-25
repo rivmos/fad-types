@@ -49,6 +49,14 @@ export interface OrderItemDTO {
    * because the line did not carry this.
    */
   taxRatePercent: string;
+  /**
+   * This line's value before GST, and the GST in it (CGST + SGST, or IGST), both
+   * frozen and computed exactly by the server. `taxableValue + taxAmount` is
+   * `lineTotal`: prices include GST. For the receipt's per-rate breakdown, so no
+   * client works tax out itself.
+   */
+  taxableValue: MoneyDTO;
+  taxAmount: MoneyDTO;
 }
 
 /**
