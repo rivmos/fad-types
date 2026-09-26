@@ -11,7 +11,7 @@ on:
   # Weekly as well (P3-16): new advisories appear without any change to this
   # repo, and a gate that only runs on push never sees them.
   schedule:
-    - cron: '0 3 * * 1'
+    - cron: "0 3 * * 1"
 
 jobs:
   typecheck:
